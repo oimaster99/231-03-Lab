@@ -95,14 +95,44 @@ public:
     }
     void setRow(int r) { colRow = (colRow & 0xF0) | (r & 0x07); }
     void setCol(int c) { colRow = (colRow & 0x0F) | ((c & 0x07) << 4); }
-    void set(int c, int r) { colRow = ((c & 0x07) << 4) | (r & 0x07); }
+    void set(int col, int row)
+    {
+        if (col < 0 || col >= 8 || row < 0 || row >= 8)
+        {
+            setInvalid(); // Mark as invalid if out of bounds
+            return;
+        }
+
+        colRow = ((col & 0x07) << 4) | (row & 0x07); // Encode column and row into colRow
+    }
 
     // Text:    The Position class can work with textual coordinates,
     //          such as "d4"
+    const Position& operator=(const char* rhs)
+    {
+        if (rhs && std::strlen(rhs) == 2) // Ensure input is valid and 2 characters long
+        {
+            char colChar = rhs[0];
+            char rowChar = rhs[1];
 
-    Position(const char* s) : colRow(0xFF) { /* Implement if needed */ }
-    const Position& operator = (const char* rhs) { /* Implement if needed */ return *this; }
-    const Position& operator = (const string& rhs) { /* Implement if needed */ return *this; }
+            // Validate column ('a' to 'h') and row ('1' to '8')
+            if (colChar >= 'a' && colChar <= 'h' && rowChar >= '1' && rowChar <= '8')
+            {
+                int col = colChar - 'a'; // Convert column to index
+                int row = rowChar - '1'; // Convert row to index
+                set(col, row);           // Set the position
+                return *this;
+            }
+        }
+
+        // If input is invalid, mark the position as invalid
+        setInvalid();
+        return *this;
+    }
+    const Position& operator=(const std::string& rhs)
+    {
+        return *this = rhs.c_str(); // Delegate to operator=(const char*)
+    }
 
 
     // Pixels:    The Position class can work with screen coordinates,
