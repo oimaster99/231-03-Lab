@@ -1,0 +1,34 @@
+﻿  board.cpp
+C:\Users\jagwe\OneDrive\Documents\VisualStudio\repos\CSE231\231.03.Lab\position.h(120,48): warning C4553: '==': result of expression not used; did you intend '='?
+  (compiling source file 'board.cpp')
+  
+  main.cpp
+C:\Users\jagwe\OneDrive\Documents\VisualStudio\repos\CSE231\231.03.Lab\position.h(120,48): warning C4553: '==': result of expression not used; did you intend '='?
+  (compiling source file 'main.cpp')
+  
+  move.cpp
+C:\Users\jagwe\OneDrive\Documents\VisualStudio\repos\CSE231\231.03.Lab\position.h(120,48): warning C4553: '==': result of expression not used; did you intend '='?
+  (compiling source file 'move.cpp')
+  
+  position.cpp
+C:\Users\jagwe\OneDrive\Documents\VisualStudio\repos\CSE231\231.03.Lab\position.h(120,48): warning C4553: '==': result of expression not used; did you intend '='?
+  (compiling source file 'position.cpp')
+  
+  testBoard.cpp
+C:\Users\jagwe\OneDrive\Documents\VisualStudio\repos\CSE231\231.03.Lab\position.h(120,48): warning C4553: '==': result of expression not used; did you intend '='?
+  (compiling source file 'testBoard.cpp')
+  
+  testMove.cpp
+C:\Users\jagwe\OneDrive\Documents\VisualStudio\repos\CSE231\231.03.Lab\position.h(120,48): warning C4553: '==': result of expression not used; did you intend '='?
+  (compiling source file 'testMove.cpp')
+  
+  testPosition.cpp
+C:\Users\jagwe\OneDrive\Documents\VisualStudio\repos\CSE231\231.03.Lab\position.h(120,48): warning C4553: '==': result of expression not used; did you intend '='?
+  (compiling source file 'testPosition.cpp')
+  
+C:\Users\jagwe\OneDrive\Documents\VisualStudio\repos\CSE231\231.03.Lab\testPosition.cpp(1187,26): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+C:\Users\jagwe\OneDrive\Documents\VisualStudio\repos\CSE231\231.03.Lab\testPosition.cpp(1209,27): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+  Generating Code...
+C:\Users\jagwe\OneDrive\Documents\VisualStudio\repos\CSE231\231.03.Lab\position.h(51,1): warning C4715: 'Position::isInvalid': not all control paths return a value
+C:\Users\jagwe\OneDrive\Documents\VisualStudio\repos\CSE231\231.03.Lab\position.h(51,1): warning C4715: 'Position::isInvalid': not all control paths return a value
+  Lab03.vcxproj -> C:\Users\jagwe\OneDrive\Documents\VisualStudio\repos\CSE231\231.03.Lab\x64\Debug\Lab03.exe
