@@ -6,16 +6,26 @@
  * Summary:
  *    The position of a piece, the cursor, or a possible move on a chess board
  ************************************************************************/
+ /***********************************************************************
+  * Header File:
+  *    POSITION
+  * Author:
+  *    <your name here>
+  * Summary:
+  *    The position of a piece, the cursor, or a possible move on a chess board
+  ************************************************************************/
 
 #pragma once
 
 #include <string>
 #include <cstdint>
+#include <iostream>
+#include <cstring>
 using std::string;
 using std::ostream;
 using std::istream;
 
-const int SIZE_SQUARE  = 32;   // number of pixels in a square by default
+const int SIZE_SQUARE = 32;   // number of pixels in a square by default
 
 /***********************************************
  * DELTA
@@ -23,14 +33,14 @@ const int SIZE_SQUARE  = 32;   // number of pixels in a square by default
  **********************************************/
 struct Delta
 {
-   int dRow;
-   int dCol;
+    int dRow;
+    int dCol;
 };
 
-const Delta ADD_R = { 1,  0};
-const Delta ADD_C = { 0,  1};
-const Delta SUB_R = {-1,  0};
-const Delta SUB_C = { 0, -1};
+const Delta ADD_R = { 1,  0 };
+const Delta ADD_C = { 0,  1 };
+const Delta SUB_R = { -1,  0 };
+const Delta SUB_C = { 0, -1 };
 
 
 class PositionTest;
@@ -41,90 +51,136 @@ class PositionTest;
  ***************************************************/
 class Position
 {
-   friend class PositionTest;
+    friend class PositionTest;
 public:
 
-   // Position :    The Position class can work with other positions,
-   //               Allowing for comparisions, copying, etc.
-   Position(const Position & rhs) {    }
-   Position() : colRow(0x99)      {              }
-   bool isInvalid() const { if (colRow > 0x77 || colRow < 0x00) {return true;} }
-   bool isValid()   const         { return !isInvalid(); }
-   void setValid() { set(0x00); }
-   void setInvalid() { set(0x99); }
-   bool operator <  (const Position & rhs) const { return true; }
-   bool operator == (const Position & rhs) const { return true; }
-   bool operator != (const Position & rhs) const { return true; }
-   const Position & operator =  (const Position & rhs) { return *this; }
-   
-   // Location : The Position class can work with locations, which
-   //            are 0...63 where we start in row 0, then row 1, etc.
-   Position(int location) : colRow(0x99) { }
-   int getLocation() const               { return colRow; }
-   void setLocation(int location)        {           }
+    // Position :    The Position class can work with other positions,
+    //               Allowing for comparisions, copying, etc.
+    Position(const Position& rhs) { colRow = rhs.colRow; }
+    Position() : colRow(0xFF) {} // Default to invalid position
+    bool isInvalid() const { return (colRow & 0x88) != 0; }
+    bool isValid() const { return !isInvalid(); }
 
-   
-   // Row/Col : The position class can work with row/column,
-   //           which are 0..7 and 0...7
-   Position(int c, int r) : colRow(0x99)  {           }
-   virtual int getCol() const                     { return 9; }
-   virtual int getRow() const                     { return 9; }
-   void setRow(int r)                     {           }
-   void setCol(int c)                     {           }
-   void set(int c, int r)                 {           }
+    void setValid() { colRow = 0x00; }
+    void setInvalid() { colRow = 0xFF; }
 
-   // Text:    The Position class can work with textual coordinates,
-   //          such as "d4"
-   
-   Position(const char * s) : colRow(0x99) {   }
-   const Position & operator =  (const char     * rhs) { return *this; }
-   const Position & operator =  (const string   & rhs) { return *this; }
+    bool operator <  (const Position& rhs) const { return colRow < rhs.colRow; }
+    bool operator == (const Position& rhs) const { return colRow == rhs.colRow; }
+    bool operator != (const Position& rhs) const { return colRow != rhs.colRow; }
+    const Position& operator =  (const Position& rhs) { colRow = rhs.colRow; return *this; }
 
-   
-   // Pixels:    The Position class can work with screen coordinates,
-   //            a.k.a. Pixels, these are X and Y coordinates. Note that
-   //            we need to scale them according to the size of the board.
-   int getX()   const
-   {
-      return (int)((double)getCol() * getSquareWidth() + getSquareWidth());
-   }
-   int getY()   const
-   {
-      return (int)((double)getRow() * getSquareHeight() + getSquareHeight());
-   }
-   void setXY(double x, double y)
-   {
-      set(    (int)(x / getSquareWidth ()) - 1,
-          8 - (int)(y / getSquareHeight())   );
-   }
-   double getSquareWidth()  const { return squareWidth;  }
-   double getSquareHeight() const { return squareHeight; }
-   void setBoardWidthHeight(int widthBoard, int heightBoard)
-   {
-      if (widthBoard < 0 || heightBoard < 0)
-         return;
-      squareWidth  = (double)widthBoard / 10.0; // 8 squares + 2 spaces
-      squareHeight = (double)heightBoard / 10.0;
-   }
+    // Location : The Position class can work with locations, which
+    //            are 0...63 where we start in row 0, then row 1, etc.
+    Position(int location) : colRow(0xFF) { setLocation(location); }
+    int getLocation() const { return (getRow() * 8) + getCol(); }
+    void setLocation(int location) { set(location % 8, location / 8); }
 
-   // Delta:    The Position class can work with deltas, which are
-   //           offsets from a given location. This helps pieces move
-   //           on the chess board.
-   Position(const Position & rhs, const Delta & delta) : colRow(-1) {  }
-   void adjustRow(int dRow) { if ((colRow + 1) < 0x78) { colRow += 1; } }
-   void adjustCol(int dCol)   { if ((colRow + 16) < 0x78) { colRow += 16; } }
-   const Position & operator += (const Delta & rhs) { return *this; }
-   Position operator + (const Delta & rhs) const { return *this; }
+
+    // Row/Col : The position class can work with row/column,
+    //           which are 0..7 and 0...7
+    Position(int c, int r) : colRow(0xFF) { set(c, r); }
+    int getCol() const
+    {
+        if (isInvalid()) // If the position is invalid, return -1
+            return -1;
+
+        return (colRow & 0xF0) >> 4; // Extract the column from colRow
+    }
+    int getRow() const
+    {
+        if (isInvalid()) // If the position is invalid, return -1
+            return -1;
+
+        return (colRow & 0x0F); // Extract the row from colRow
+    }
+    void setRow(int r) { colRow = (colRow & 0xF0) | (r & 0x07); }
+    void setCol(int c) { colRow = (colRow & 0x0F) | ((c & 0x07) << 4); }
+    void set(int c, int r) { colRow = ((c & 0x07) << 4) | (r & 0x07); }
+
+    // Text:    The Position class can work with textual coordinates,
+    //          such as "d4"
+
+    Position(const char* s) : colRow(0xFF) { /* Implement if needed */ }
+    const Position& operator = (const char* rhs) { /* Implement if needed */ return *this; }
+    const Position& operator = (const string& rhs) { /* Implement if needed */ return *this; }
+
+
+    // Pixels:    The Position class can work with screen coordinates,
+    //            a.k.a. Pixels, these are X and Y coordinates. Note that
+    //            we need to scale them according to the size of the board.
+    int getX() const { return (int)((double)getCol() * getSquareWidth() + getSquareWidth()); }
+    int getY() const { return (int)((double)getRow() * getSquareHeight() + getSquareHeight()); }
+    void setXY(double x, double y)
+    {
+        // Calculate the column (x-coordinate) and row (y-coordinate)
+        int col = static_cast<int>(x / squareWidth) - 1;
+        int row = 8 - static_cast<int>(y / squareHeight);
+
+        // Check for invalid X or Y positions
+        if (col < 0 || col >= 8 || row < 0 || row >= 8)
+        {
+            setInvalid(); // Mark the position as invalid
+            return;
+        }
+
+        // Set the position if within bounds
+        set(col, row);
+    }
+
+
+    double getSquareWidth() const { return squareWidth; }
+    double getSquareHeight() const { return squareHeight; }
+    void setBoardWidthHeight(int widthBoard, int heightBoard)
+    {
+        if (widthBoard < 0 || heightBoard < 0)
+            return;
+        squareWidth = (double)widthBoard / 10.0; // 8 squares + 2 spaces
+        squareHeight = (double)heightBoard / 10.0;
+    }
+
+    // Delta:    The Position class can work with deltas, which are
+    //           offsets from a given location. This helps pieces move
+    //           on the chess board.
+    Position(const Position& rhs, const Delta& delta) : colRow(0xFF)
+    {
+        set(rhs.getCol() + delta.dCol, rhs.getRow() + delta.dRow);
+    }
+
+    void adjustRow(int dRow) { setRow(getRow() + dRow); }
+    void adjustCol(int dCol) { setCol(getCol() + dCol); }
+
+    const Position& operator+=(const Delta& rhs)
+    {
+        if (isInvalid()) // If already invalid, don't modify
+            return *this;
+
+        int newRow = getRow() + rhs.dRow;
+        int newCol = getCol() + rhs.dCol;
+
+        // Check if the new position is off the board
+        if (newRow < 0 || newRow >= 8 || newCol < 0 || newCol >= 8)
+        {
+            setInvalid();
+        }
+        else
+        {
+            set(newCol, newRow); // Set the new position if valid
+        }
+        return *this;
+    }
+    Position operator + (const Delta& rhs) const
+    {
+        return Position(*this, rhs);
+    }
 
 private:
     void set(uint8_t colRowNew) const { colRow == colRowNew; }
-   
-   uint8_t colRow;
-   static double squareWidth;
-   static double squareHeight;
+
+    uint8_t colRow;
+    static double squareWidth;
+    static double squareHeight;
 };
 
 
-ostream & operator << (ostream & out, const Position & pos);
-istream & operator >> (istream & in,  Position & pos);
-      
+ostream& operator << (ostream& out, const Position& pos);
+istream& operator >> (istream& in, Position& pos);
