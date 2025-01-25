@@ -2,18 +2,10 @@
  * Header File:
  *    POSITION
  * Author:
- *    <your name here>
+ *    Joshua Macias, Roy Garcia
  * Summary:
  *    The position of a piece, the cursor, or a possible move on a chess board
  ************************************************************************/
- /***********************************************************************
-  * Header File:
-  *    POSITION
-  * Author:
-  *    <your name here>
-  * Summary:
-  *    The position of a piece, the cursor, or a possible move on a chess board
-  ************************************************************************/
 
 #pragma once
 
@@ -63,6 +55,7 @@ public:
 
     void setValid() { colRow = 0x00; }
     void setInvalid() { colRow = 0xFF; }
+    void setInvalidRow() { colRow = (colRow & ~0xFU) | 0xFU; }
 
     bool operator <  (const Position& rhs) const { return colRow < rhs.colRow; }
     bool operator == (const Position& rhs) const { return colRow == rhs.colRow; }
@@ -147,14 +140,23 @@ public:
         int row = 8 - static_cast<int>(y / squareHeight);
 
         // Check for invalid X or Y positions
-        if (col < 0 || col >= 8 || row < 0 || row >= 8)
+        if (col < 0 || col >= 8)
         {
             setInvalid(); // Mark the position as invalid
             return;
         }
 
-        // Set the position if within bounds
-        set(col, row);
+        //Set Column position
+        setCol(col);
+
+        if (row < 0 || row >= 8)
+        {
+            setInvalidRow();
+            return;
+        }
+
+        // Set Row position
+        setRow(row);
     }
 
 
