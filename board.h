@@ -9,6 +9,7 @@
 
 #pragma once
 
+#include <stack>
 #include <cassert>
 #include "move.h"   // Because we return a set of Move
 
@@ -41,19 +42,24 @@ class Board
 
 public:
 
+    Board(ogstream* pgout = nullptr, bool noreset = false);
+    virtual ~Board() { }
+
    // getters
-   virtual int  getCurrentMove() const { return -99;      }
-   virtual bool whiteTurn()      const { return false;  }
+   virtual int  getCurrentMove() const { return numMoves;      }
+   virtual bool whiteTurn()      const { return numMoves % 2 == 0; }
    virtual void display(const Position& posHover, const Position& posSelect) const {}
    virtual const Piece& operator [] (const Position& pos) const;
 
    // setters
-   virtual void move(const Move & move) { }
+   virtual void move(const Move& move);
    virtual Piece& operator [] (const Position& pos);
 
 protected:
    int numMoves;
    Piece * board[8][8];    // the board of chess pieces
+
+   ogstream* pgout;
 };
 
 
@@ -65,13 +71,16 @@ class BoardDummy : public Board
 {
    friend TestBoard; 
 public:
-   BoardDummy()                                           {                }
+   BoardDummy()                                           {
+       numMoves = 0;
+       
+   }
    ~BoardDummy()                                          {                }
 
    void display(const Position& posHover,
                 const Position& posSelect) const          { assert(false); }
    void move       (const Move& move)                     { assert(false); }
-   int  getCurrentMove() const                            { assert(false); return 0; }
+   int  getCurrentMove() const { assert(false); return 0; }
    bool whiteTurn()      const                            { assert(false); return false; }
    Piece& operator [] (const Position& pos)
    { 
@@ -93,19 +102,22 @@ public:
  **************************************************/
 class BoardEmpty : public BoardDummy
 {
-   friend TestBoard;
+    friend TestBoard;
 public:
-   Piece * pSpace;
+    Piece* pSpace;
 
-   BoardEmpty();
-   ~BoardEmpty();
-   const Piece& operator [] (const Position& pos) const
-   {
-      assert(pos.isValid());
-      if (board[pos.getCol()][pos.getRow()])
-         return *(board[pos.getCol()][pos.getRow()]);
-      else
-         return *pSpace;
-   }
+    BoardEmpty();
+    ~BoardEmpty();
+    const Piece& operator [] (const Position& pos) const
+    {
+        assert(pos.isValid());
+        if (board[pos.getCol()][pos.getRow()])
+            return *(board[pos.getCol()][pos.getRow()]);
+        else
+            return *pSpace;
+    }
+
+    int getCurrentMove() const {
+        return numMoves;
+    }
 };
-

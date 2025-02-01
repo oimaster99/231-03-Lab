@@ -13,6 +13,17 @@
 #include <cassert>
 using namespace std;
 
+/***********************************************
+* BOARD : CONSTRUCT
+*         Give every piece a place on the board.
+***********************************************/
+Board::Board(ogstream* pgout, bool noreset) : pgout(pgout), numMoves(0)
+{
+	for (int r = 0; r < 8; r++)
+		for (int c = 0; c < 8; c++)
+			board[r][c] = nullptr;	
+}
+
 
 // we really REALLY need to delete this.
 Space space;
@@ -23,11 +34,21 @@ Space space;
 ***********************************************/
 const Piece& Board::operator [] (const Position& pos) const
 {
-   return space;
+	assert(0 <= pos.getCol() && pos.getCol() < 8);
+	assert(0 <= pos.getRow() && pos.getRow() < 8);
+	assert(nullptr != board[pos.getCol()][pos.getRow()]);
+	return *board[pos.getCol()][pos.getRow()];
+}
+void Board::move(const Move& move)
+{
+	assert(false);
 }
 Piece& Board::operator [] (const Position& pos)
 {
-   return space;
+	assert(0 <= pos.getCol() && pos.getCol() < 8);
+	assert(0 <= pos.getRow() && pos.getRow() < 8);
+	assert(nullptr != board[pos.getCol()][pos.getRow()]);
+	return *board[pos.getCol()][pos.getRow()];
 }
 
 
